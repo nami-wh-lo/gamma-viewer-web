@@ -1,11 +1,23 @@
 const path = require('path');
 
 const config = {
-  entry: ['babel-polyfill', './index.js'],
-  devtool: 'cheap-module-eval-source-map',
+  entry: ['babel-polyfill', './src/index.js'],
   mode: 'development',
-  node: {
-    fs: 'empty',
+  target: 'web',
+  externals: {      
+    // Don't bundle react or react-dom      
+    "react": {          
+        commonjs: "react",          
+        commonjs2: "react",          
+        amd: "React",          
+        root: "React"      
+    },      
+    "react-dom": {          
+        commonjs: "react-dom",          
+        commonjs2: "react-dom",          
+        amd: "ReactDOM",          
+        root: "ReactDOM"      
+    }  
   },
   module: {
     rules: [
@@ -14,6 +26,9 @@ const config = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
+          options: {
+            presets: ['@babel/react', '@babel/env']
+          }
         },
       },
       {
@@ -44,10 +59,10 @@ const config = {
     ],
   },
   output: {
-    path: path.resolve(__dirname, '../gamma_viewer', 'static'),
-    publicPath: '../gamma_viewer/static',
-    filename: 'extension.js',
-    libraryTarget: 'umd',
+    path: path.resolve(__dirname, './dist'),
+    publicPath: './dist',
+    filename: 'bundle.js',
+    libraryTarget: 'umd'
   },
   resolve: {
     extensions: ['.mjs', '.js', '.jsx', '.json'],
@@ -55,7 +70,11 @@ const config = {
       path.join(__dirname, '.'),
       'node_modules',
     ],
-  },
+    alias: {          
+      'react': path.resolve(__dirname, './node_modules/react'),
+      'react-dom': path.resolve(__dirname, './node_modules/react-dom'),      
+    }
+  }
 };
 
 module.exports = config;
